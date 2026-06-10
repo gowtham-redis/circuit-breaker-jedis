@@ -1,0 +1,64 @@
+# =============================================================================
+#  Circuit Breaker Demo - configuration
+#
+#  Copy this file to  demo.properties  (or run ./scripts/configure.sh which
+#  writes it for you), then edit the values for your environment.
+#
+#  Endpoints are plain  host:port  (no redis:// scheme needed).
+#  db.1 is the PRIMARY by default (highest weight); traffic prefers it and
+#  fails back to it on recovery.
+# =============================================================================
+
+# Number of databases to use: 2 or 3
+db.count=2
+
+# ---- Database 1 (PRIMARY - highest weight) ----------------------------------
+db.1.name=North
+db.1.endpoint=redis-12002.re-cluster1.ps-redislabs.org:12002
+db.1.weight=1.0
+# Auth (leave BOTH blank for an unauthenticated database):
+#   password only  -> default user with a password
+#   username+pass  -> ACL user
+db.1.username=
+db.1.password=
+db.1.tls=false
+
+# ---- Database 2 (standby) ---------------------------------------------------
+db.2.name=South
+db.2.endpoint=redis-12002.re-cluster2.ps-redislabs.org:12002
+db.2.weight=0.5
+db.2.username=
+db.2.password=
+db.2.tls=false
+
+# ---- Database 3 (optional - set db.count=3 to enable) -----------------------
+# db.3.name=Central
+# db.3.endpoint=redis-12002.re-cluster3.ps-redislabs.org:12002
+# db.3.weight=0.25
+# db.3.username=
+# db.3.password=
+# db.3.tls=false
+
+# ---- Workload ---------------------------------------------------------------
+workload.threads=4
+workload.sleepMillis=1
+
+# ---- Circuit breaker / failover tuning --------------------------------------
+# Open the circuit at >= failureRateThreshold% failures, once at least
+# minFailures errors occur within a slidingWindowSecs-second window.
+cb.slidingWindowSecs=2
+cb.failureRateThreshold=50
+cb.minFailures=3
+
+# Retry each command this many times before it counts as a CB failure.
+retry.maxAttempts=2
+retry.waitMillis=100
+
+# Failback: probe the primary every intervalMs; return after a gracePeriodMs.
+failback.enabled=true
+failback.intervalMs=15000
+failback.gracePeriodMs=5000
+
+# Per-connection timeouts (ms). Short values = snappy failover.
+socket.timeoutMs=1000
+connect.timeoutMs=1000

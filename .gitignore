@@ -1,0 +1,14 @@
+# Build output
+target/
+*.class
+
+# Local config - may contain passwords. Ship demo.properties.example instead.
+demo.properties
+demo.properties.bak.*
+
+# OS / editor cruft
+.DS_Store
+**/.DS_Store
+*.swp
+.idea/
+*.iml
