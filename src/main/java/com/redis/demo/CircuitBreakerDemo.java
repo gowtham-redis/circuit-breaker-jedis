@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.*;
  *   2. environment variable DEMO_CONFIG
  *   3. ./demo.properties             (default)
  *
- * See Notes.md (setup) and Demo_Script.md (run book).
+ * See README.md (setup) and Demo_Script.md (presentation run book).
  */
 public class CircuitBreakerDemo {
 

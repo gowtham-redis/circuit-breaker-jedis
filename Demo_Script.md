@@ -7,6 +7,9 @@ with no restart and no code change — then fails back automatically when the pr
 
 **Total run time:** ~5 minutes. **You need two terminals** on the `load` machine.
 
+> First time here? Set the demo up with **[README.md](README.md)** (download → build → configure),
+> then come back to this run book.
+
 ---
 
 ## PART 1 — PREP (before the audience is watching)
