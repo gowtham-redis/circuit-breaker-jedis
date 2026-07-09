@@ -9,6 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 source scripts/_lib.sh
 require_conf
+require_iptables
 
 NAME="${1:-}"
 read -r HOST PORT < <(endpoint_for "$NAME") || { echo "No database named '${NAME:-<primary>}' in $CONF" >&2; exit 1; }

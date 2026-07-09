@@ -72,24 +72,10 @@ for i in $(seq 1 "$COUNT"); do
   } >> "$OUT"
 done
 
-# Workload + circuit-breaker defaults (edit demo.properties to tune)
-cat >> "$OUT" <<'TUNING'
-# ---- Workload ----
-workload.threads=4
-workload.sleepMillis=1
-
-# ---- Circuit breaker / failover tuning ----
-cb.slidingWindowSecs=2
-cb.failureRateThreshold=50
-cb.minFailures=3
-retry.maxAttempts=2
-retry.waitMillis=100
-failback.enabled=true
-failback.intervalMs=15000
-failback.gracePeriodMs=5000
-socket.timeoutMs=1000
-connect.timeoutMs=1000
-TUNING
+# Advanced tuning (threads, circuit-breaker thresholds, timeouts) uses built-in
+# defaults - no need to set anything here. To override, copy the relevant keys
+# from demo.properties.example into this file.
+echo "# Advanced tuning is optional - see demo.properties.example for all keys." >> "$OUT"
 
 echo
 echo "Wrote $OUT:"

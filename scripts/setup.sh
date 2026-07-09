@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
 # -----------------------------------------------------------------------------
 # setup.sh - install Java 17 + Maven (if missing) and build the fat jar.
-# Idempotent: safe to run more than once.
+# Detects the host package manager (apt / dnf / yum / brew). Idempotent.
 # -----------------------------------------------------------------------------
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "==> Checking for Java and Maven..."
-need_install=0
-command -v java >/dev/null 2>&1 || need_install=1
-command -v mvn  >/dev/null 2>&1 || need_install=1
+install_toolchain() {
+  if command -v apt-get >/dev/null 2>&1; then
+    sudo apt-get update -y
+    sudo apt-get install -y openjdk-17-jdk-headless maven
+  elif command -v dnf >/dev/null 2>&1; then
+    sudo dnf install -y java-17-openjdk-devel maven
+  elif command -v yum >/dev/null 2>&1; then
+    sudo yum install -y java-17-openjdk-devel maven
+  elif command -v brew >/dev/null 2>&1; then
+    brew install openjdk@17 maven
+  else
+    echo "!!  No supported package manager (apt/dnf/yum/brew) found." >&2
+    echo "!!  Please install Java 17 and Maven manually, then re-run this script." >&2
+    exit 1
+  fi
+}
 
-if [ "$need_install" -eq 1 ]; then
-  echo "==> Java and/or Maven not found. Installing openjdk-17 + maven (needs sudo)..."
-  sudo apt-get update -y
-  sudo apt-get install -y openjdk-17-jdk-headless maven
-else
+echo "==> Checking for Java and Maven..."
+if command -v java >/dev/null 2>&1 && command -v mvn >/dev/null 2>&1; then
   echo "==> Java and Maven already present."
+else
+  echo "==> Installing Java 17 + Maven..."
+  install_toolchain
 fi
 
 echo

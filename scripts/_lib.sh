@@ -34,3 +34,18 @@ resolve_ip() {  # resolve_ip <host> -> first IPv4
 require_conf() {
   [ -f "$CONF" ] || { echo "Config '$CONF' not found. Run ./scripts/configure.sh first." >&2; exit 1; }
 }
+
+# block/unblock rely on Linux iptables. Fail early with guidance elsewhere.
+require_iptables() {
+  if [ "$(uname -s)" != "Linux" ]; then
+    echo "block/unblock need Linux + iptables (this host is $(uname -s))." >&2
+    echo "On another OS, simulate the outage another way (host firewall, or take the" >&2
+    echo "endpoint down) - the app itself runs anywhere with Java." >&2
+    exit 1
+  fi
+  command -v iptables >/dev/null 2>&1 || {
+    echo "iptables not found. Install it (e.g. 'sudo apt-get install -y iptables') or" >&2
+    echo "run the demo on the load box, which has it." >&2
+    exit 1
+  }
+}

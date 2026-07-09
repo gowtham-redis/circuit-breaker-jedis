@@ -11,21 +11,24 @@ primary goes down — and **fails back** when it recovers. No restart, no applic
 - Everything driven by one `demo.properties` file
 
 > **Presenting this to a customer?** The live run book — what to do and what to say, minute by
-> minute — is in **[Demo_Script.md](Demo_Script.md)**. This README is how to set it up.
+> minute — is in **[Demo_Guide.md](Demo_Guide.md)**. This README is how to set it up.
 
 ---
 
 ## Requirements
 
-Run everything on your **client / load machine** (the box that reaches your Redis endpoints):
+Run everything on the **machine that reaches your Redis endpoints** (on ps-labs, that's the `load`
+box). Works on any host; the only hard requirement is for the failover *trigger*:
 
-- Linux x86_64 (tested on Ubuntu 20.04) with **internet access** (Maven Central + GitHub)
-- **`git`** and **`redis-cli`**
-- **`sudo`** — used only to install the Java toolchain and to run `iptables` for the failover trigger
+- **Internet access** (to fetch Java/Maven and the build dependencies) and **`git`**
+- **`redis-cli`** (handy for the health checks; pre-installed on the ps-labs `load` box)
 - Network reachability from this machine to **all** your Redis database endpoints
+- **For the failover trigger only:** **Linux + `iptables` + `sudo`** (the `block.sh`/`unblock.sh`
+  scripts). The app itself runs anywhere with Java — on a non-Linux host you'd simulate the outage
+  another way (host firewall, or take the endpoint down).
 
-Java 17 + Maven are installed automatically by `setup.sh` if they're missing. No Docker — the build
-produces a single self-contained fat jar.
+Java 17 + Maven are installed automatically by `setup.sh` (detects `apt`/`dnf`/`yum`/`brew`) if
+they're missing. No Docker — the build produces a single self-contained fat jar.
 
 ---
 
@@ -41,7 +44,8 @@ cd "Circuit Breaker Jedis"
 ```bash
 ./scripts/setup.sh
 ```
-Installs Java 17 + Maven if needed, then builds the fat jar. (First run downloads dependencies, ~1 min.)
+Installs Java 17 + Maven if needed (via `apt`/`dnf`/`yum`/`brew`), then builds the fat jar.
+(First run downloads dependencies, ~1 min.)
 
 ### 3. Configure your endpoints
 ```bash
@@ -140,7 +144,7 @@ ACL user → set both `username` and `password`.
 
 ```
 README.md                  This file — setup & reference
-Demo_Script.md             The live presentation run book (prep + acts + what to say)
+Demo_Guide.md              The live presentation run book (prep + acts + what to say)
 pom.xml                    Maven build (fat jar)
 demo.properties.example    Config template (copy to demo.properties)
 scripts/
