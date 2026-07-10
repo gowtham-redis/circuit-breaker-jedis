@@ -142,7 +142,7 @@ public class CircuitBreakerDemo {
                     .connectionTimeoutMillis(connectTimeout);
             if (!d.user.isEmpty()) cc.user(d.user);     // ACL user (optional)
             if (!d.pass.isEmpty()) cc.password(d.pass);  // password (default user or ACL)
-            if (d.tls)            cc.ssl(true);          // TLS (optional)
+            if (d.tls)            cc.sslOptions(SslOptions.defaults());  // TLS with JVM defaults (optional)
             JedisClientConfig clientConfig = cc.build();
 
             ConnectionPoolConfig pool = new ConnectionPoolConfig();
