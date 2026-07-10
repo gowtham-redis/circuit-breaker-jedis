@@ -36,9 +36,12 @@ they're missing. No Docker — the build produces a single self-contained fat ja
 
 ### 1. Download
 ```bash
-git clone <YOUR_REMOTE_REPO_URL> "Circuit Breaker Jedis"
+git clone https://github.com/gowtham-redis/circuit-breaker-jedis.git "Circuit Breaker Jedis"
 cd "Circuit Breaker Jedis"
 ```
+> This repo is **private** — cloning over HTTPS will prompt for your GitHub username and a
+> **Personal Access Token** (a password won't work). Anyone you've granted repo access can clone
+> the same way.
 
 ### 2. Build
 ```bash
