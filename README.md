@@ -32,28 +32,51 @@ they're missing. No Docker — the build produces a single self-contained fat ja
 
 ---
 
+## Before you begin — set up your databases
+
+This demo needs **2 (or 3) reachable Redis endpoints** — ideally the members of an **Active-Active**
+database, so the data is consistent across regions and failover is seamless. **Do this first — you
+need the endpoints for step 3.**
+
+1. Create (or confirm you already have) an Active-Active database spanning your clusters — e.g. in
+   the Redis Enterprise **Cluster Manager UI**. On ps-labs you typically already have the
+   North + South A-A databases.
+2. Note each member's **endpoint** as `host:port`, plus any **username / password / TLS**.
+   Find them in the Cluster Manager UI (**Databases → your DB → Endpoint**), or on a cluster node:
+
+       rladmin status databases
+
+   Each participating cluster exposes its own endpoint for the same database — use one per region
+   (e.g. the North cluster's endpoint as DB 1, South's as DB 2).
+
+---
+
 ## Setup — four steps
 
 ### 1. Download
-```bash
-git clone https://github.com/gowtham-redis/circuit-breaker-jedis.git "Circuit Breaker Jedis"
-cd "Circuit Breaker Jedis"
-```
-> This repo is **private** — cloning over HTTPS will prompt for your GitHub username and a
-> **Personal Access Token** (a password won't work). Anyone you've granted repo access can clone
-> the same way.
+
+Clone the repo, then move into it:
+
+    git clone https://github.com/gowtham-redis/circuit-breaker-jedis.git "Circuit Breaker Jedis"
+    cd "Circuit Breaker Jedis"
+
+> This repo is **private** — cloning over HTTPS prompts for your GitHub username and a
+> **Personal Access Token** (a password won't work). Anyone you've granted repo access clones the
+> same way.
 
 ### 2. Build
-```bash
-./scripts/setup.sh
-```
+
+    ./scripts/setup.sh
+
 Installs Java 17 + Maven if needed (via `apt`/`dnf`/`yum`/`brew`), then builds the fat jar.
 (First run downloads dependencies, ~1 min.)
 
 ### 3. Configure your endpoints
-```bash
-./scripts/configure.sh
-```
+
+Use the endpoints you collected in **Before you begin**:
+
+    ./scripts/configure.sh
+
 Interactive prompts for each database — **press Enter to accept the default in brackets**
 (defaults target the ps-portal North/South lab). It asks for:
 
@@ -63,25 +86,24 @@ Interactive prompts for each database — **press Enter to accept the default in
 This writes `demo.properties`. You can also copy `demo.properties.example` and edit it by hand.
 
 ### 4. Run
-```bash
-./scripts/run.sh
-```
+
+    ./scripts/run.sh
+
 You'll see a startup banner, a connectivity probe, then a once-per-second live meter:
-```
-[14:02:11]  Active: North    |  4500 ops/s | Success: 100.0% | Total:     45,000
-```
+
+    [14:02:11]  Active: North    |  4500 ops/s | Success: 100.0% | Total:     45,000
 
 ---
 
 ## Triggering failover
 
-From a **second terminal** on the same machine (the workload keeps running in the first):
+Open a **second terminal** on the same machine (the workload keeps running in the first). A new
+shell starts in your home directory, so **`cd` into the project first**:
 
-```bash
-./scripts/block.sh   North     # simulate an outage of a database  -> failover
-./scripts/unblock.sh North     # restore it                         -> failback
-./scripts/status.sh            # ping every database + show active block rules
-```
+    cd "Circuit Breaker Jedis"
+    ./scripts/block.sh   North      # simulate an outage of a database  -> failover
+    ./scripts/unblock.sh North      # restore it                         -> failback
+    ./scripts/status.sh             # ping every database + show active block rules
 
 `block.sh` / `unblock.sh` take a **database name** from your config (default = the primary). They
 resolve its endpoint and add/remove a precise `iptables` REJECT rule for you — no manual IP lookup.
@@ -145,19 +167,17 @@ ACL user → set both `username` and `password`.
 
 ## Project layout
 
-```
-README.md                  This file — setup & reference
-Demo_Guide.md              The live presentation run book (prep + acts + what to say)
-pom.xml                    Maven build (fat jar)
-demo.properties.example    Config template (copy to demo.properties)
-scripts/
-  setup.sh                 Install Java+Maven, build the fat jar
-  configure.sh             Interactive config generator
-  run.sh                   Start the demo
-  block.sh / unblock.sh    Trigger / clear a failover by database name
-  status.sh                Ping all databases + show active block rules
-src/main/java/com/redis/demo/CircuitBreakerDemo.java
-```
+    README.md                  This file — setup & reference
+    Demo_Guide.md              The live presentation run book (prep + acts + what to say)
+    pom.xml                    Maven build (fat jar)
+    demo.properties.example    Config template (copy to demo.properties)
+    scripts/
+      setup.sh                 Install Java+Maven, build the fat jar
+      configure.sh             Interactive config generator
+      run.sh                   Start the demo
+      block.sh / unblock.sh    Trigger / clear a failover by database name
+      status.sh                Ping all databases + show active block rules
+    src/main/java/com/redis/demo/CircuitBreakerDemo.java
 
 ---
 

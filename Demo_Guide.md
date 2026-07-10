@@ -71,8 +71,9 @@ the success rate — those are the only two things that matter for the next five
 
 ### ACT 2 — Trigger the outage  (≈ 0:45–1:15)
 
-**Terminal 2:**
+**Terminal 2** (a fresh shell — `cd` into the project first; keep it open for Act 5):
 ```bash
+cd "Circuit Breaker Jedis"
 ./scripts/block.sh North
 ```
 
@@ -185,6 +186,7 @@ operational intervention.** That's client-side geographic failover."*
 
 ## CLEANUP (always, after the demo)
 ```bash
+cd "Circuit Breaker Jedis"     # if not already in the project dir
 ./scripts/unblock.sh North     # remove any block rule
 ./scripts/status.sh            # confirm: all UP, REJECT rules → none
 ```
