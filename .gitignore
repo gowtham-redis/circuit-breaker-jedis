@@ -6,6 +6,9 @@ target/
 demo.properties
 demo.properties.bak.*
 
+# Local deploy helper (pushes this demo into the team repo) - not part of the demo
+deploy-to-team.sh
+
 # OS / editor cruft
 .DS_Store
 **/.DS_Store
